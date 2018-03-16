@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -16,6 +17,8 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Environment;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import android.util.Log;
@@ -29,11 +32,25 @@ import android.Manifest;
 import android.support.v4.app.ActivityCompat;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
@@ -46,12 +63,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     Uri photoURI;
     private TextView latitudePosition;
     private TextView longitudePosition;
-    private TextView currentCity;
+    private TextView currentCity,hashid,decrypted;
     private LocationManager locationManager;
     private Location location;
     private final int REQUEST_LOCATION = 200;
     int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private static final String TAG = "MainActivity";
+    private String hashed,geotaggedData,encryptedData;
+    KeyPairGenerator kpg;
+    KeyPair kp;
+    PublicKey publicKey;
+    PrivateKey privateKey;
+    Cipher cipher, cipher1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +83,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         takePictureButton = (Button) findViewById(R.id.button_image);
         imageView = (ImageView) findViewById(R.id.imageview);
+        hashid = (TextView) findViewById(R.id.hashid);
+        decrypted = (TextView) findViewById(R.id.decrypted);
+
         box = (TextView)  findViewById(R.id.box);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -87,6 +113,38 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 longitudePosition.setText(String.valueOf(location.getLongitude()));
                 Log.d("AAAAAAAAAAAAAA", String.valueOf(location.getLatitude()));
                 Log.d("AAAAAAAAAAAAAA", String.valueOf(location.getLongitude()));
+                ///////////////////
+
+                Calendar calendar = Calendar.getInstance();
+                // calendar.setTime(yourdate);
+                int hours = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                int month = calendar.get(Calendar.MONTH);
+                int year = calendar.get(Calendar.YEAR);
+
+                currentCity.setText("TIME: " + hours + " DATE: " + day + "/" + month + "/" + year);
+                geotaggedData=String.valueOf(location.getLatitude())+"_"+String.valueOf(location.getLongitude())+"_"+String.valueOf(hours)+"_"+String.valueOf(minute)+"_"+String.valueOf(day)+"_"+String.valueOf(month)+"_"+String.valueOf(year)+"_";
+                try {
+                    encryptedData=encrypt(geotaggedData);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    decrypted.setText(decrypt(encryptedData));
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (NoSuchPaddingException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                } catch (IllegalBlockSizeException e) {
+                    e.printStackTrace();
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                }
+                ///////////////////////
                 getAddressFromLocation(location, getApplicationContext(), new GeoCoderHandler());
             }
         } else {
@@ -161,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     result = null;
             }
             // currentCity.setText(result);
-            Calendar calendar = Calendar.getInstance();
+       /*     Calendar calendar = Calendar.getInstance();
             // calendar.setTime(yourdate);
             int hours = calendar.get(Calendar.HOUR_OF_DAY);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -169,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             int year = calendar.get(Calendar.YEAR);
 
             currentCity.setText("TIME: " + hours + " DATE: " + day + "/" + month + "/" + year);
-
+*/
 
         }
     }
@@ -241,6 +299,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 Bitmap imageBitmap = (Bitmap) extras.get("data");
                 imageView.setImageBitmap(imageBitmap);*/
                 imageView.setImageURI(photoURI);
+                try {
+                    hashed=hashImage(photoURI);
+                } catch (NoSuchAlgorithmException e) {
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+
+
             }
         }
     }
@@ -278,5 +343,70 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         return image;
     }
 
+
+    private String hashImage(Uri photoURI) throws NoSuchAlgorithmException {
+
+        byte[] bitmapdata;
+
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoURI);
+
+           // Bitmap bitmap = BitmapFactory.decodeResource(getResources(), photoFile);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            bitmapdata = stream.toByteArray();
+        } catch (Exception e) {
+            bitmapdata = "hey".getBytes();
+        }
+        System.out.println("Start MD5 Digest");
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update(bitmapdata);
+        byte[] hash = md.digest();
+        hashid.setText(bytesToString(hash));
+        return bytesToString(hash);
+
+    }
+
+    public  String bytesToString(byte[] b) {
+        byte[] b2 = new byte[b.length + 1];
+        b2[0] = 1;
+        System.arraycopy(b, 0, b2, 1, b.length);
+        return new BigInteger(b2).toString(36);
+    }
+
+    public String encrypt (String plain) throws Exception {
+        kpg = KeyPairGenerator.getInstance("RSA");
+        kpg.initialize(1024);
+        kp = kpg.genKeyPair();
+        publicKey = kp.getPublic();
+        privateKey = kp.getPrivate();
+
+        cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte [] encryptedBytes;
+        encryptedBytes = cipher.doFinal(plain.getBytes());
+
+        String encrypted = bytesToString(encryptedBytes);
+        return encrypted;
+    }
+
+
+    public String decrypt (String result) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException
+    {
+        byte[] decryptedBytes;
+        String decrypted;
+        cipher1=Cipher.getInstance("RSA");
+        cipher1.init(Cipher.DECRYPT_MODE, privateKey);
+        decryptedBytes = cipher1.doFinal(stringToBytes(result));
+        decrypted = new String(decryptedBytes);
+        //i2.setImageResource(R.drawable.smiley.png);
+
+        return decrypted;
+
+    }
+    public  byte[] stringToBytes(String s) {
+        byte[] b2 = new BigInteger(s, 36).toByteArray();
+        return Arrays.copyOfRange(b2, 1, b2.length);
+    }
 
 }
