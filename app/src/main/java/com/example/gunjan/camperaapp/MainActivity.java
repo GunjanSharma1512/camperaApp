@@ -360,10 +360,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
         System.out.println("Start MD5 Digest");
         MessageDigest md = MessageDigest.getInstance("MD5");
-        md.update(bitmapdata);
-        byte[] hash = md.digest();
-        hashid.setText(bytesToString(hash));
-        return bytesToString(hash);
+       // md.update(bitmapdata);
+      //  byte[] hash = md.digest();
+      //  hashid.setText(bytesToString(hash));
+      //  return bytesToString(hash);
+
+        ///////////////////////
+
+        byte[] hash = md.digest(bitmapdata);
+        String encoded = Base64.encodeToString(hash,Base64.DEFAULT);
+        // System.out.println(Arrays.toString(thedigest));
+        hashid.setText(encoded);
+      //  System.out.println(encoded);
+        return encoded;
+        //////////////////////
 
     }
 
@@ -379,10 +389,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         kpg.initialize(1024);
         kp = kpg.genKeyPair();
         publicKey = kp.getPublic();
+        Log.d(TAG,publicKey.getFormat()+" "+publicKey.toString());
         privateKey = kp.getPrivate();
 
         cipher = Cipher.getInstance("RSA");
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        cipher.init(Cipher.ENCRYPT_MODE, privateKey);
         byte [] encryptedBytes;
         encryptedBytes = cipher.doFinal(plain.getBytes());
 
@@ -396,7 +407,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         byte[] decryptedBytes;
         String decrypted;
         cipher1=Cipher.getInstance("RSA");
-        cipher1.init(Cipher.DECRYPT_MODE, privateKey);
+        cipher1.init(Cipher.DECRYPT_MODE, publicKey);
         decryptedBytes = cipher1.doFinal(stringToBytes(result));
         decrypted = new String(decryptedBytes);
         //i2.setImageResource(R.drawable.smiley.png);
