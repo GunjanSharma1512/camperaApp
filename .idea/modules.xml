@@ -3,9 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\Akshama PC\Desktop\8TH SEM\SIH-Git\camperaApp\app\app.iml" filepath="C:\Users\Akshama PC\Desktop\8TH SEM\SIH-Git\camperaApp\app\app.iml" />
       <module fileurl="file://$PROJECT_DIR$/camperaApp.iml" filepath="$PROJECT_DIR$/camperaApp.iml" />
-      <module fileurl="file://C:\Users\Akshama PC\Desktop\8TH SEM\SIH-Git\camperaApp\camperaApp.iml" filepath="C:\Users\Akshama PC\Desktop\8TH SEM\SIH-Git\camperaApp\camperaApp.iml" />
     </modules>
   </component>
 </project>

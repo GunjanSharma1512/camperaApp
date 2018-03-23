@@ -1,5 +1,6 @@
 package com.example.gunjan.camperaapp;
 
+import android.app.Fragment;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.location.LocationManager;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +24,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import android.widget.*;
 import android.view.View;
 import android.net.Uri;
@@ -33,6 +37,7 @@ import android.support.v4.app.ActivityCompat;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -52,8 +57,10 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import static android.app.Activity.RESULT_OK;
 
-public class MainActivity extends AppCompatActivity implements LocationListener {
+
+public class MainActivity extends Fragment implements LocationListener {
     private Button takePictureButton;
     private ImageView imageView;
     Uri file;
@@ -75,38 +82,42 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     PublicKey publicKey;
     PrivateKey privateKey;
     Cipher cipher, cipher1;
+    View myView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    //protected void onCreate(Bundle savedInstanceState) {
+        //super.onCreate(savedInstanceState);
+        //setContentView(R.layout.activity_main);
+        myView=inflater.inflate(R.layout.activity_main,container,false);
+        takePictureButton = (Button) myView.findViewById(R.id.button_image);
+        imageView = (ImageView) myView.findViewById(R.id.imageview);
+        hashid = (TextView) myView.findViewById(R.id.hashid);
+        decrypted = (TextView) myView.findViewById(R.id.decrypted);
 
-        takePictureButton = (Button) findViewById(R.id.button_image);
-        imageView = (ImageView) findViewById(R.id.imageview);
-        hashid = (TextView) findViewById(R.id.hashid);
-        decrypted = (TextView) findViewById(R.id.decrypted);
+        box = (TextView)  myView.findViewById(R.id.box);
 
-        box = (TextView)  findViewById(R.id.box);
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             takePictureButton.setEnabled(false);
-            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
+            ActivityCompat.requestPermissions(getActivity(), new String[] { Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
         }
 
-        latitudePosition = (TextView) findViewById(R.id.latitude);
-        longitudePosition = (TextView) findViewById(R.id.longitude);
-        currentCity = (TextView) findViewById(R.id.city);
-        locationManager = (LocationManager) getSystemService(Service.LOCATION_SERVICE);
-        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+        latitudePosition = (TextView) myView.findViewById(R.id.latitude);
+        longitudePosition = (TextView) myView.findViewById(R.id.longitude);
+        currentCity = (TextView) myView.findViewById(R.id.city);
+
+        locationManager = (LocationManager) getContext().getSystemService(Service.LOCATION_SERVICE);
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_LOCATION);
-            Toast.makeText(MainActivity.this, "permission not given", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "permission not given", Toast.LENGTH_SHORT).show();
         } else {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 2, MainActivity.this);
             if (locationManager != null) {
                 location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             }
         }
+
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             if (location != null) {
                 latitudePosition.setText(String.valueOf(location.getLatitude()));
@@ -145,13 +156,45 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     e.printStackTrace();
                 }
                 ///////////////////////
-                getAddressFromLocation(location, getApplicationContext(), new GeoCoderHandler());
+                //TODO - WHY THIS?
+                getAddressFromLocation(location, getContext(), new GeoCoderHandler());
             }
         } else {
             // showGPSDisabledAlertToUser();
-            Toast.makeText(MainActivity.this, "provider is disabled", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "provider is disabled", Toast.LENGTH_SHORT).show();
 
         }
+
+        //Take Picture button functionality
+        takePictureButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View myView)
+            {
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                // Ensure that there's a camera activity to handle the intent
+                if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {
+                    // Create the File where the photo should go
+                    photoFile = null;
+                    try {
+                        photoFile = createImageFile();
+                    } catch (IOException ex) {
+
+                    }
+                    // Continue only if the File was successfully created
+                    if (photoFile != null) {
+                        photoURI = FileProvider.getUriForFile(getContext(),
+                                "com.example.gunjan.camperaapp.fileprovider",
+                                photoFile);
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(takePictureIntent, 1);
+                    }
+                }
+            }
+        });
+
+
+
+
+     return myView;
     }
 
     @Override
@@ -161,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     @Override
     public void onProviderDisabled(String provider) {
         if (provider.equals(LocationManager.GPS_PROVIDER)) {
-            Toast.makeText(MainActivity.this, "provider is disabled", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "provider is disabled", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -245,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
                 // permission was granted, yay! Do the
                 // location-related task you need to do.
-                if (ContextCompat.checkSelfPermission(this,
+                if (ContextCompat.checkSelfPermission(getContext(),
                         Manifest.permission.ACCESS_FINE_LOCATION)
                         == PackageManager.PERMISSION_GRANTED) {
 
@@ -263,36 +306,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
-    public void takePicture(View view) {
-        /*Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(intent, 1);
-        }*/
-
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                photoURI = FileProvider.getUriForFile(this,
-                        "com.example.gunjan.camperaapp.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, 1);
-            }
-        }
-    }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 /*Bundle extras = data.getExtras();
@@ -300,14 +316,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 imageView.setImageBitmap(imageBitmap);*/
                 imageView.setImageURI(photoURI);
                 try {
-                    hashed=hashImage(photoURI);
+                   hashed=hashImage(photoURI);
                 } catch (NoSuchAlgorithmException e) {
-                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
 
 
             }
         }
+
+
+
     }
 
     /*private static File getOutputMediaFile(){
@@ -330,7 +349,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
@@ -349,12 +368,21 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         byte[] bitmapdata;
 
         try {
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoURI);
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), photoURI);
 
            // Bitmap bitmap = BitmapFactory.decodeResource(getResources(), photoFile);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+            int width = bitmap.getWidth();
+           int height = bitmap.getHeight();
+
+            int size = bitmap.getRowBytes() * bitmap.getHeight();
+            ByteBuffer byteBuffer = ByteBuffer.allocate(size);
+            bitmap.copyPixelsToBuffer(byteBuffer);
+            bitmapdata = byteBuffer.array();
+
+           /* ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            bitmapdata = stream.toByteArray();
+            bitmapdata = stream.toByteArray();*/
         } catch (Exception e) {
             bitmapdata = "hey".getBytes();
         }
