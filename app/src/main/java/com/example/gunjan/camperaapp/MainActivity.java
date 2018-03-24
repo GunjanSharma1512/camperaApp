@@ -68,6 +68,7 @@ public class MainActivity extends Fragment implements LocationListener {
     String mCurrentPhotoPath;
     File photoFile;
     Uri photoURI;
+    Button upload;
     private TextView latitudePosition;
     private TextView longitudePosition;
     private TextView currentCity,hashid,decrypted;
@@ -83,6 +84,7 @@ public class MainActivity extends Fragment implements LocationListener {
     PrivateKey privateKey;
     Cipher cipher, cipher1;
     View myView;
+    private DatabaseHelper databaseHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -94,8 +96,9 @@ public class MainActivity extends Fragment implements LocationListener {
         imageView = (ImageView) myView.findViewById(R.id.imageview);
         hashid = (TextView) myView.findViewById(R.id.hashid);
         decrypted = (TextView) myView.findViewById(R.id.decrypted);
-
+        upload = (Button) myView.findViewById(R.id.upload);
         box = (TextView)  myView.findViewById(R.id.box);
+        databaseHelper = new DatabaseHelper(getActivity());
 
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             takePictureButton.setEnabled(false);
@@ -134,7 +137,7 @@ public class MainActivity extends Fragment implements LocationListener {
                 int month = calendar.get(Calendar.MONTH);
                 int year = calendar.get(Calendar.YEAR);
 
-                currentCity.setText("TIME: " + hours + " DATE: " + day + "/" + month + "/" + year);
+                currentCity.setText("TIME: " + hours + ":" + minute + " DATE: " + day + "/" + month + "/" + year);
                 geotaggedData=String.valueOf(location.getLatitude())+"_"+String.valueOf(location.getLongitude())+"_"+String.valueOf(hours)+"_"+String.valueOf(minute)+"_"+String.valueOf(day)+"_"+String.valueOf(month)+"_"+String.valueOf(year)+"_";
                 try {
                     encryptedData=encrypt(geotaggedData);
@@ -191,6 +194,12 @@ public class MainActivity extends Fragment implements LocationListener {
             }
         });
 
+        upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), ShowActivity.class));
+            }
+        });
 
 
 
@@ -311,15 +320,38 @@ public class MainActivity extends Fragment implements LocationListener {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
-                /*Bundle extras = data.getExtras();
-                Bitmap imageBitmap = (Bitmap) extras.get("data");
-                imageView.setImageBitmap(imageBitmap);*/
-                imageView.setImageURI(photoURI);
+               /* Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");*/
+                /*imageView.setImageBitmap(imageBitmap);*/
+                //imageView.setImageURI(photoURI);
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select File"),2);
+
+            }
+        }
+
+        else if(requestCode==2){
+            if (resultCode == RESULT_OK) {
+                Bitmap bm=null;
+                if (data != null) {
+                    try {
+                        bm = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), data.getData());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                imageView.setImageBitmap(bm);
                 try {
-                   hashed=hashImage(photoURI);
+                    hashed=hashImage(photoURI);
                 } catch (NoSuchAlgorithmException e) {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
+                Log.d("AAAAAAAAAAAAAAAAAAAAA", data.toURI().toString());
+                Log.d("AAAAAAAAAAAAAAAAAAAAA", hashed);
+                Log.d("AAAAAAAAAAAAAAAAAAAAA", decrypted.getText().toString());
+                databaseHelper.insertImage(data.toURI().toString(),hashed, decrypted.getText().toString());
 
 
             }

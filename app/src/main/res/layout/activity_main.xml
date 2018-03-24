@@ -32,6 +32,7 @@
         android:id="@+id/box"
         android:layout_width="258dp"
         android:layout_height="134dp"
+        android:text="box"
         android:layout_gravity="center_horizontal|center|center_vertical"
         android:gravity="center_vertical|center|center_horizontal"
         />
@@ -40,6 +41,7 @@
         android:id="@+id/latitude"
         android:layout_width="137dp"
         android:layout_height="46dp"
+        android:text="latitude"
         android:layout_gravity="center_horizontal|center|center_vertical"
         android:gravity="center_vertical|center|center_horizontal"
          />
@@ -50,12 +52,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|center|center_vertical"
         android:gravity="center_vertical|center|center_horizontal"
-        android:text="TextView" />
+        android:text="Decrypted" />
 
     <TextView
         android:id="@+id/longitude"
         android:layout_width="138dp"
         android:layout_height="50dp"
+        android:text="longitude"
         android:layout_gravity="center_horizontal|center|center_vertical"
         android:gravity="center_vertical|center|center_horizontal"
         />
@@ -64,6 +67,7 @@
         android:id="@+id/city"
         android:layout_width="149dp"
         android:layout_height="34dp"
+        android:text="city"
         android:layout_gravity="center_horizontal|center|center_vertical"
         android:gravity="center_vertical|center|center_horizontal"
          />
@@ -74,6 +78,12 @@
         android:layout_height="34dp"
         android:layout_gravity="center_horizontal|center|center_vertical"
         android:gravity="center_vertical|center|center_horizontal"
-        android:text="TextView" />
+        android:text="Hashid" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="upload"
+        android:id="@+id/upload"/>
 
 </LinearLayout>
