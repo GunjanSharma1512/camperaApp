@@ -318,21 +318,21 @@ public class MainActivity extends Fragment implements LocationListener {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
+       // if (requestCode == 1) {
+         //   if (resultCode == RESULT_OK) {
                /* Bundle extras = data.getExtras();
                 Bitmap imageBitmap = (Bitmap) extras.get("data");*/
                 /*imageView.setImageBitmap(imageBitmap);*/
                 //imageView.setImageURI(photoURI);
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select File"),2);
+           //     Intent intent = new Intent();
+             //   intent.setType("image/*");
+               // intent.setAction(Intent.ACTION_GET_CONTENT);
+               // startActivityForResult(Intent.createChooser(intent, "Select File"),2);
 
-            }
-        }
+          //  }
+        //}
 
-        else if(requestCode==2){
+       if(requestCode==1){
             if (resultCode == RESULT_OK) {
                 Bitmap bm=null;
                 if (data != null) {
@@ -342,16 +342,17 @@ public class MainActivity extends Fragment implements LocationListener {
                         e.printStackTrace();
                     }
                 }
-                imageView.setImageBitmap(bm);
+               // imageView.setImageBitmap(bm);
+                imageView.setImageURI(photoURI);
                 try {
                     hashed=hashImage(photoURI);
                 } catch (NoSuchAlgorithmException e) {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
-                Log.d("AAAAAAAAAAAAAAAAAAAAA", data.toURI().toString());
+              //  Log.d("AAAAAAAAAAAAAAAAAAAAA", data.toURI().toString());
                 Log.d("AAAAAAAAAAAAAAAAAAAAA", hashed);
                 Log.d("AAAAAAAAAAAAAAAAAAAAA", decrypted.getText().toString());
-                databaseHelper.insertImage(data.toURI().toString(),hashed, decrypted.getText().toString());
+                databaseHelper.insertImage(mCurrentPhotoPath,hashed, decrypted.getText().toString());
 
 
             }

@@ -16,15 +16,7 @@
             android:id="@+id/upload_photo"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Upload Photo" />
-        <item
-            android:id="@+id/upload_form"
-            android:icon="@drawable/form"
-            android:title="Upload Form" />
 
-        <item
-            android:id="@+id/logout"
-            android:icon="@drawable/logout"
-            android:title="Logout" />
     </group>
 
     <item android:title="Communicate">

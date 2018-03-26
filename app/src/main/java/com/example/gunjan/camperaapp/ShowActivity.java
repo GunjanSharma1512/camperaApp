@@ -178,7 +178,8 @@ public class ShowActivity extends AppCompatActivity {
                 imageView.setImageBitmap(bm);
                 imageView.setMaxWidth(200);
                 imageView.setMaxHeight(200);
-                String path = data.toURI().toString();
+               // String path = data.toURI().toString();
+                String path=RealPathUtil.getRealPathFromURI_API19(this, data.getData());
                 ImageHelper imageHelper = databaseHelper.getImage(path);
                 Hash.setText(imageHelper.getHashcode().toString());
                 Encryp.setText(imageHelper.getEncrypted().toString());

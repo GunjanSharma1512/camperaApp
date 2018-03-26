@@ -86,11 +86,11 @@ public class StartActivity extends AppCompatActivity
 
         } else if (id == R.id.upload_photo) {
 
-        } else if (id == R.id.upload_form) {
+        } /*else if (id == R.id.upload_form) {
 
         } else if (id == R.id.logout) {
 
-        }
+        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
