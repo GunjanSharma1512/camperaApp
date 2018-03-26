@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center|center_horizontal|center_vertical"
+    android:gravity="center_vertical|center_horizontal|center"
     android:orientation="vertical"
     tools:context="com.example.gunjan.camperaapp.ShowActivity">
 
@@ -26,5 +28,11 @@
         android:text="Encrypted text:   "
         android:textStyle="bold"
         android:id="@+id/encryp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/send"
+        android:text="Submit"/>
 
 </LinearLayout>
