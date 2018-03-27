@@ -3,9 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\dell\AndroidStudioProjects\SIH\camperaApp\app\app.iml" filepath="C:\Users\dell\AndroidStudioProjects\SIH\camperaApp\app\app.iml" />
-      <module fileurl="file://C:\Users\dell15z\Downloads\camperaApp-arti\camperaApp.iml" filepath="C:\Users\dell15z\Downloads\camperaApp-arti\camperaApp.iml" />
-      <module fileurl="file://C:\Users\dell\AndroidStudioProjects\SIH\camperaApp\camperaApp.iml" filepath="C:\Users\dell\AndroidStudioProjects\SIH\camperaApp\camperaApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/camperaApp-arti.iml" filepath="$PROJECT_DIR$/camperaApp-arti.iml" />
     </modules>
   </component>

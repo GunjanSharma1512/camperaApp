@@ -412,6 +412,7 @@ public class MainActivity extends Fragment implements LocationListener {
             ByteBuffer byteBuffer = ByteBuffer.allocate(size);
             bitmap.copyPixelsToBuffer(byteBuffer);
             bitmapdata = byteBuffer.array();
+            Log.d("BBBBBBBBBBBBBBBBBBBB",String.valueOf(bitmapdata));
 
            /* ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);

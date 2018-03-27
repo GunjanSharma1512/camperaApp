@@ -63,7 +63,9 @@ public class StartActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
+            Intent in=new Intent(this,Login_Registration.class);
+            startActivity(in);
             return true;
         }
 
@@ -80,15 +82,19 @@ public class StartActivity extends AppCompatActivity
         if (id == R.id.profile) {
             // Handle the camera action
             //fragmentmanager.beginTransaction().replace(R.id.content_frame,new MainActivity()).commit();
+            getFragmentManager().beginTransaction().replace(R.id.content_frame,new Profile()).commit();
         } else if (id == R.id.take_photo) {
 
             getFragmentManager().beginTransaction().replace(R.id.content_frame,new MainActivity()).commit();
 
         } else if (id == R.id.upload_photo) {
+            getFragmentManager().beginTransaction().replace(R.id.content_frame,new UploadPhoto()).commit();
 
-        } /*else if (id == R.id.upload_form) {
+        } else if (id == R.id.upload_details) {
 
-        } else if (id == R.id.logout) {
+            getFragmentManager().beginTransaction().replace(R.id.content_frame,new UploadDetails()).commit();
+
+        } /*else if (id == R.id.logout) {
 
         }*/
 

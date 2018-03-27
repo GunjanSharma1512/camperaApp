@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/ro_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textView11"
+        android:layout_below="@+id/textView11"
+        android:layout_marginTop="34dp"
+        android:text="Release order Number"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/soc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/ro_no"
+        android:layout_below="@+id/ro_no"
+        android:layout_marginTop="20dp"
+        android:text="Subject of Campaign"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/media"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/soc"
+        android:layout_below="@+id/soc"
+        android:layout_marginTop="21dp"
+        android:text="Media/Property"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/quantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/media"
+        android:layout_below="@+id/media"
+        android:layout_marginTop="23dp"
+        android:text="Quantity"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/place"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/quantity"
+        android:layout_below="@+id/quantity"
+        android:layout_marginTop="24dp"
+        android:text="Place/Location"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/place"
+        android:layout_below="@+id/place"
+        android:layout_marginTop="25dp"
+        android:text="State"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/pod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/state"
+        android:layout_below="@+id/state"
+        android:layout_marginTop="22dp"
+        android:text="Period of Display"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="37dp"
+        android:fontFamily="monospace"
+        android:text="DAVP Display Report"
+        android:textColor="@android:color/black"
+        android:textSize="30sp" />
+
+    <EditText
+        android:id="@+id/editText3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/ro_no"
+        android:layout_alignBottom="@+id/ro_no"
+        android:layout_alignParentEnd="true"
+        android:ems="10"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/editText4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/soc"
+        android:layout_alignBottom="@+id/soc"
+        android:layout_alignParentEnd="true"
+        android:ems="10"
+        android:inputType="text"
+        android:textColor="@android:color/black" />
+    <EditText
+        android:id="@+id/editText5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/media"
+        android:layout_alignBottom="@+id/media"
+        android:layout_alignParentEnd="true"
+        android:ems="10"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/editText6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/quantity"
+        android:layout_alignBottom="@+id/quantity"
+        android:layout_alignParentEnd="true"
+        android:ems="10"
+        android:inputType="text|number" />
+    <EditText
+        android:id="@+id/editText7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/place"
+        android:layout_alignBottom="@+id/place"
+        android:layout_alignParentEnd="true"
+        android:ems="10"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/editText8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/state"
+        android:layout_alignBottom="@+id/state"
+        android:layout_alignParentEnd="true"
+        android:ems="10"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/editText9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/pod"
+        android:layout_alignBottom="@+id/pod"
+        android:layout_alignParentEnd="true"
+        android:ems="10"
+        android:inputType="text" />
+
+    <Button
+        android:id="@+id/submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editText9"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="27dp"
+        android:text="Submit" />
+</RelativeLayout>

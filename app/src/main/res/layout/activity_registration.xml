@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.gunjan.camperaapp.Registration">
+
+    <TextView
+        android:id="@+id/agency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="88dp"
+        android:text="Agency Name"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/agency"
+        android:layout_below="@+id/agency"
+        android:layout_marginTop="20dp"
+        android:text="Address"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/add"
+        android:layout_below="@+id/add"
+        android:layout_marginTop="21dp"
+        android:text="Contact Number"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/contact"
+        android:layout_below="@+id/contact"
+        android:layout_marginTop="23dp"
+        android:text="Email ID"
+        android:textColor="@android:color/black"/>
+
+
+    <EditText
+        android:id="@+id/editText3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/agency"
+        android:layout_alignBottom="@+id/agency"
+        android:layout_alignParentEnd="true"
+        android:ems="10"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/editText4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/add"
+        android:layout_alignBottom="@+id/add"
+        android:layout_alignParentEnd="true"
+        android:ems="10"
+        android:inputType="text"
+        android:textColor="@android:color/black" />
+    <EditText
+        android:id="@+id/editText5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/contact"
+        android:layout_alignBottom="@+id/contact"
+        android:layout_alignParentEnd="true"
+        android:ems="10"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/editText6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/email"
+        android:layout_alignBottom="@+id/email"
+        android:layout_alignParentEnd="true"
+        android:ems="10"
+        android:inputType="text" />
+
+    <Button
+        android:id="@+id/submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editText6"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="60dp"
+        android:layout_toEndOf="@+id/contact"
+        android:onClick="sumbit"
+        android:text="Submit" />
+
+</RelativeLayout>

@@ -1,21 +1,14 @@
 package com.example.gunjan.camperaapp;
 
 import android.Manifest;
-import android.content.CursorLoader;
+import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.location.LocationManager;
-import android.net.Uri;
-import android.os.ParcelFileDescriptor;
-import android.provider.ContactsContract;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,31 +22,29 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.w3c.dom.Text;
-
 import java.io.ByteArrayOutputStream;
-import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
 
-public class ShowActivity extends Fragment {
+/**
+ * Created by dell15z on 27-Mar-18.
+ */
 
+public class UploadPhoto extends Fragment {
+
+    View myView;
     ImageView imageView;
     TextView Hash, Encryp;
     DatabaseHelper databaseHelper;
-    Button send;
+    Button upload;
     Bitmap bm;
-    View myView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,9 +52,10 @@ public class ShowActivity extends Fragment {
         //super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
         myView = inflater.inflate(R.layout.activity_show, container, false);
-        imageView =  (ImageView) myView.findViewById(R.id.image);
+
+        imageView =  (ImageView)myView.findViewById(R.id.image);
         Hash = (TextView) myView.findViewById(R.id.hash);
-        send = (Button) myView.findViewById(R.id.send);
+        upload = (Button) myView.findViewById(R.id.send);
         Encryp = (TextView) myView.findViewById(R.id.encryp);
         databaseHelper =  new DatabaseHelper(getContext());
 
@@ -80,63 +72,50 @@ public class ShowActivity extends Fragment {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select File"),1);
 
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                byte[] imageBytes = baos.toByteArray();
-                final String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-                RequestQueue queue = Volley.newRequestQueue(getContext());
-                String url ="http://172.16.75.172:8000/unhash/";
-                StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
-                    @Override
-                    public void onResponse(String s) {
-                        if(s.equals("true")){
-                            Toast.makeText(getContext(), "Uploaded Successful", Toast.LENGTH_LONG).show();
-                        }
-                        else{
-                            Toast.makeText(getContext(), "Not same"+s, Toast.LENGTH_LONG).show();
-                        }
-                    }
-                },new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        Toast.makeText(getContext(), "Some error occurred -> "+volleyError, Toast.LENGTH_LONG).show();;
-                    }
-                }) {
-                    //adding parameters to send
-                    @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        Map<String, String> parameters = new HashMap<String, String>();
-                        parameters.put("photo", imageString);
-                        parameters.put("hashcode", Hash.getText().toString());
-                        parameters.put("encrypted", Encryp.getText().toString());
-                        return parameters;
-                    }
-                };
-                queue.add(request);
-                /*request.setRetryPolicy(new RetryPolicy() {
-                    @Override
-                    public int getCurrentTimeout() {
-                        return 0;
-                    }
+        upload.setOnClickListener(new View.OnClickListener() {
+                                      public void onClick(View myView) {
 
-                    @Override
-                    public int getCurrentRetryCount() {
-                        return 0;
-                    }
+                                          ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                          bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                                          byte[] imageBytes = baos.toByteArray();
+                                          final String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+                                          RequestQueue queue = Volley.newRequestQueue(getContext());
+                                          String url ="http://172.16.75.172:8000/unhash/";
+                                          StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
+                                              @Override
+                                              public void onResponse(String s) {
+                                                  if(s.equals("true")){
+                                                      Toast.makeText(getContext(), "Uploaded Successful", Toast.LENGTH_LONG).show();
+                                                  }
+                                                  else{
+                                                      Toast.makeText(getContext(), "Not same"+s, Toast.LENGTH_LONG).show();
+                                                  }
+                                              }
+                                          },new Response.ErrorListener(){
+                                              @Override
+                                              public void onErrorResponse(VolleyError volleyError) {
+                                                  Toast.makeText(getContext(), "Some error occurred -> "+volleyError, Toast.LENGTH_LONG).show();;
+                                              }
+                                          }) {
+                                              //adding parameters to send
+                                              @Override
+                                              protected Map<String, String> getParams() throws AuthFailureError {
+                                                  Map<String, String> parameters = new HashMap<String, String>();
+                                                  parameters.put("photo", imageString);
+                                                  parameters.put("hashcode", Hash.getText().toString());
+                                                  parameters.put("encrypted", Encryp.getText().toString());
+                                                  return parameters;
+                                              }
+                                          };
+                                          queue.add(request);
 
-                    @Override
-                    public void retry(VolleyError error) throws VolleyError {
-                        Toast.makeText(ShowActivity.this, "blabla", Toast.LENGTH_SHORT).show();
-                    }
-                });*/
-                Toast.makeText(getContext(), "DONEEEEEE", Toast.LENGTH_SHORT).show();
-            }
-        });
+                                          Toast.makeText(getContext(), "DONEEEEEE", Toast.LENGTH_SHORT).show();
+                                      }
+                                  }
+        );
         return myView;
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -150,7 +129,7 @@ public class ShowActivity extends Fragment {
                         Manifest.permission.READ_EXTERNAL_STORAGE)
                         == PackageManager.PERMISSION_GRANTED) {
 
-                    }
+                }
 
             } else {
 
@@ -179,7 +158,7 @@ public class ShowActivity extends Fragment {
                 if (data != null) {
                     try {
                         bm = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), data.getData());
-                        Log.d("AAAAAAAAAAAAAAAA", data.toURI().toString());
+                       // Log.d("AAAAAAAAAAAAAAAA", data.toURI().toString());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -187,7 +166,7 @@ public class ShowActivity extends Fragment {
                 imageView.setImageBitmap(bm);
                 imageView.setMaxWidth(200);
                 imageView.setMaxHeight(200);
-               // String path = data.toURI().toString();
+                // String path = data.toURI().toString();
                 String path=RealPathUtil.getRealPathFromURI_API19(getContext(), data.getData());
                 ImageHelper imageHelper = databaseHelper.getImage(path);
                 Hash.setText(imageHelper.getHashcode().toString());
@@ -200,6 +179,3 @@ public class ShowActivity extends Fragment {
     }
 
 }
-
-
-
