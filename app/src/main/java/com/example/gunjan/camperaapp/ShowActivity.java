@@ -46,7 +46,7 @@ import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
 
-public class ShowActivity extends Fragment {
+public class ShowActivity extends AppCompatActivity {
 
     ImageView imageView;
     TextView Hash, Encryp;
@@ -56,23 +56,21 @@ public class ShowActivity extends Fragment {
     View myView;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //protected void onCreate(Bundle savedInstanceState) {
-        //super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
-        myView = inflater.inflate(R.layout.activity_show, container, false);
-        imageView =  (ImageView) myView.findViewById(R.id.image);
-        Hash = (TextView) myView.findViewById(R.id.hash);
-        send = (Button) myView.findViewById(R.id.send);
-        Encryp = (TextView) myView.findViewById(R.id.encryp);
-        databaseHelper =  new DatabaseHelper(getContext());
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_show);
+        imageView =  (ImageView) findViewById(R.id.image);
+        Hash = (TextView) findViewById(R.id.hash);
+        send = (Button) findViewById(R.id.send);
+        Encryp = (TextView) findViewById(R.id.encryp);
+        databaseHelper =  new DatabaseHelper(this);
 
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     1);
-            Toast.makeText(getContext(), "permission not given", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "permission not given", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(getContext(), "allow external read", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "allow external read", Toast.LENGTH_SHORT).show();
         }
 
         Intent intent = new Intent();
@@ -87,22 +85,22 @@ public class ShowActivity extends Fragment {
                 bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                 byte[] imageBytes = baos.toByteArray();
                 final String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-                RequestQueue queue = Volley.newRequestQueue(getContext());
+                RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
                 String url ="http://172.16.75.172:8000/unhash/";
                 StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
                     @Override
                     public void onResponse(String s) {
                         if(s.equals("true")){
-                            Toast.makeText(getContext(), "Uploaded Successful", Toast.LENGTH_LONG).show();
+                            Toast.makeText(ShowActivity.this, "Uploaded Successful", Toast.LENGTH_LONG).show();
                         }
                         else{
-                            Toast.makeText(getContext(), "Not same"+s, Toast.LENGTH_LONG).show();
+                            Toast.makeText(ShowActivity.this, "Not same"+s, Toast.LENGTH_LONG).show();
                         }
                     }
                 },new Response.ErrorListener(){
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
-                        Toast.makeText(getContext(), "Some error occurred -> "+volleyError, Toast.LENGTH_LONG).show();;
+                        Toast.makeText(ShowActivity.this, "Some error occurred -> "+volleyError, Toast.LENGTH_LONG).show();;
                     }
                 }) {
                     //adding parameters to send
@@ -132,10 +130,9 @@ public class ShowActivity extends Fragment {
                         Toast.makeText(ShowActivity.this, "blabla", Toast.LENGTH_SHORT).show();
                     }
                 });*/
-                Toast.makeText(getContext(), "DONEEEEEE", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ShowActivity.this, "DONEEEEEE", Toast.LENGTH_SHORT).show();
             }
         });
-        return myView;
     }
 
     @Override
@@ -146,7 +143,7 @@ public class ShowActivity extends Fragment {
 
                 // permission was granted, yay! Do the
                 // location-related task you need to do.
-                if (ContextCompat.checkSelfPermission(getContext(),
+                if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.READ_EXTERNAL_STORAGE)
                         == PackageManager.PERMISSION_GRANTED) {
 
@@ -172,13 +169,13 @@ public class ShowActivity extends Fragment {
                 try {
                     hashed=hashImage(photoURI);
                 } catch (NoSuchAlgorithmException e) {
-                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
                 databaseHelper.insertImage(photoURI.toString(),hashed, decrypted.getText().toString());*/
                 bm=null;
                 if (data != null) {
                     try {
-                        bm = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), data.getData());
+                        bm = MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData());
                         Log.d("AAAAAAAAAAAAAAAA", data.toURI().toString());
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -187,8 +184,8 @@ public class ShowActivity extends Fragment {
                 imageView.setImageBitmap(bm);
                 imageView.setMaxWidth(200);
                 imageView.setMaxHeight(200);
-               // String path = data.toURI().toString();
-                String path=RealPathUtil.getRealPathFromURI_API19(getContext(), data.getData());
+                String path = data.toURI().toString();
+                //String path=RealPathUtil.getRealPathFromURI_API19(this, data.getData());
                 ImageHelper imageHelper = databaseHelper.getImage(path);
                 Hash.setText(imageHelper.getHashcode().toString());
                 Encryp.setText(imageHelper.getEncrypted().toString());

@@ -318,6 +318,7 @@ public class MainActivity extends Fragment implements LocationListener {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Bundle bundle = data.getExtras();
        // if (requestCode == 1) {
          //   if (resultCode == RESULT_OK) {
                /* Bundle extras = data.getExtras();
@@ -334,10 +335,10 @@ public class MainActivity extends Fragment implements LocationListener {
 
        if(requestCode==1){
             if (resultCode == RESULT_OK) {
-                Bitmap bm=null;
+                /*Bitmap bm=null;
                 if (data != null) {
                     try {
-                        bm = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), data.getData());
+                        bm = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), (Bitmap) bundle.get("data"));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -345,18 +346,48 @@ public class MainActivity extends Fragment implements LocationListener {
                // imageView.setImageBitmap(bm);
                 imageView.setImageURI(photoURI);
                 try {
-                    hashed=hashImage(photoURI);
+                    hashed=hashImage(bm);
                 } catch (NoSuchAlgorithmException e) {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
               //  Log.d("AAAAAAAAAAAAAAAAAAAAA", data.toURI().toString());
                 Log.d("AAAAAAAAAAAAAAAAAAAAA", hashed);
                 Log.d("AAAAAAAAAAAAAAAAAAAAA", decrypted.getText().toString());
-                databaseHelper.insertImage(mCurrentPhotoPath,hashed, decrypted.getText().toString());
+                databaseHelper.insertImage(mCurrentPhotoPath,hashed, decrypted.getText().toString());*/
+
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select File"),2);
 
 
             }
         }
+
+       else if(requestCode==2){
+           if (resultCode == RESULT_OK) {
+               Bitmap bm=null;
+               if (data != null) {
+                   try {
+                       bm = MediaStore.Images.Media.getBitmap( getContext().getContentResolver(), data.getData());
+                   } catch (IOException e) {
+                       e.printStackTrace();
+                   }
+               }
+               imageView.setImageBitmap(bm);
+               try {
+                   hashed=hashImage(bm);
+               } catch (NoSuchAlgorithmException e) {
+                   Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+               }
+               Log.d("AAAAAAAAAAAAAAAAAAAAA", data.toURI().toString());
+               Log.d("AAAAAAAAAAAAAAAAAAAAA", hashed);
+               Log.d("AAAAAAAAAAAAAAAAAAAAA", decrypted.getText().toString());
+               databaseHelper.insertImage(data.toURI().toString(),hashed, decrypted.getText().toString());
+
+
+           }
+       }
 
 
 
@@ -396,27 +427,23 @@ public class MainActivity extends Fragment implements LocationListener {
     }
 
 
-    private String hashImage(Uri photoURI) throws NoSuchAlgorithmException {
+    private String hashImage(Bitmap bm) throws NoSuchAlgorithmException {
 
         byte[] bitmapdata;
 
         try {
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), photoURI);
+            Bitmap bitmap = bm;
 
            // Bitmap bitmap = BitmapFactory.decodeResource(getResources(), photoFile);
-
-            int width = bitmap.getWidth();
-           int height = bitmap.getHeight();
-
+/*
             int size = bitmap.getRowBytes() * bitmap.getHeight();
             ByteBuffer byteBuffer = ByteBuffer.allocate(size);
             bitmap.copyPixelsToBuffer(byteBuffer);
-            bitmapdata = byteBuffer.array();
-            Log.d("BBBBBBBBBBBBBBBBBBBB",String.valueOf(bitmapdata));
+            bitmapdata = byteBuffer.array();*/
 
-           /* ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            bitmapdata = stream.toByteArray();*/
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            bitmapdata = stream.toByteArray();
         } catch (Exception e) {
             bitmapdata = "hey".getBytes();
         }
