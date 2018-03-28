@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
         android:ems="10"
+        android:text="password"
         android:hint="Password"
         android:inputType="textPassword"
         android:paddingTop="40dp"
@@ -21,6 +22,7 @@
 
     <EditText
         android:id="@+id/editText2"
+        android:text="username"
         android:layout_width="224dp"
         android:layout_height="0dp"
         android:layout_marginBottom="36dp"
