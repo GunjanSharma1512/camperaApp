@@ -89,7 +89,7 @@ public class ShowActivity extends android.app.Fragment{
                 byte[] imageBytes = baos.toByteArray();
                 final String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
                 RequestQueue queue = Volley.newRequestQueue(getContext());
-                String url ="http://172.16.75.172:8000/unhash/";
+                String url ="http://192.168.43.232:8000/unhash/";
                 StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
                     @Override
                     public void onResponse(String s) {
