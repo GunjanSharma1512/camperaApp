@@ -102,7 +102,9 @@ public class ShowActivity extends android.app.Fragment{
                         else{
                             Toast.makeText(getContext(), "Not same"+s, Toast.LENGTH_LONG).show();
                         }*/
-                       databaseHelper.insertId(path,s);
+                        Toast.makeText(getContext(), "Uploaded Successful. Your submission ID is: "+s, Toast.LENGTH_LONG).show();
+
+                        databaseHelper.insertId(path,s);
                     }
                 },new Response.ErrorListener(){
                     @Override
@@ -138,7 +140,7 @@ public class ShowActivity extends android.app.Fragment{
                         Toast.makeText(ShowActivity.this, "blabla", Toast.LENGTH_SHORT).show();
                     }
                 });*/
-                Toast.makeText(getContext(), "DONEEEEEE", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Sent to Server", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -149,28 +151,7 @@ public class ShowActivity extends android.app.Fragment{
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(intent, "Select File"),70);
-                RequestQueue queue = Volley.newRequestQueue(getContext());
-                String url ="http://172.16.75.172:8000/writehere/";
-                StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
-                    @Override
-                    public void onResponse(String s) {
-                        Toast.makeText(getContext(), "YESSSSS", Toast.LENGTH_SHORT).show();
-                    }
-                },new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        Toast.makeText(getContext(), "Some error occurred -> "+volleyError, Toast.LENGTH_LONG).show();;
-                    }
-                }) {
-                    //adding parameters to send
-                    @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        Map<String, String> parameters = new HashMap<String, String>();
-                        parameters.put("id", databaseHelper.getImage(imageid).getUuid());
-                        return parameters;
-                    }
-                };
-                queue.add(request);
+
             }
         });
 
@@ -236,6 +217,33 @@ public class ShowActivity extends android.app.Fragment{
 
         if(requestCode==70){
             imageid = data.toURI().toString();
+            RequestQueue queue = Volley.newRequestQueue(getContext());
+            String url ="http://192.168.43.232:8000/constraint_match/";
+            StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
+                @Override
+                public void onResponse(String s) {
+
+                    if(s.equals("matched"))
+                        Toast.makeText(getContext(), "Your image has been validated", Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(getContext(), "Your image is invalid", Toast.LENGTH_SHORT).show();
+
+                }
+            },new Response.ErrorListener(){
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    Toast.makeText(getContext(), "Some error occurred -> "+volleyError, Toast.LENGTH_LONG).show();;
+                }
+            }) {
+                //adding parameters to send
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> parameters = new HashMap<String, String>();
+                    parameters.put("id", databaseHelper.getImage(imageid).getUuid());
+                    return parameters;
+                }
+            };
+            queue.add(request);
         }
 
 
