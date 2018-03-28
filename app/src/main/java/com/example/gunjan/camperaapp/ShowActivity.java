@@ -149,28 +149,7 @@ public class ShowActivity extends android.app.Fragment{
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(intent, "Select File"),70);
-                RequestQueue queue = Volley.newRequestQueue(getContext());
-                String url ="http://172.16.75.172:8000/writehere/";
-                StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
-                    @Override
-                    public void onResponse(String s) {
-                        Toast.makeText(getContext(), "YESSSSS", Toast.LENGTH_SHORT).show();
-                    }
-                },new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        Toast.makeText(getContext(), "Some error occurred -> "+volleyError, Toast.LENGTH_LONG).show();;
-                    }
-                }) {
-                    //adding parameters to send
-                    @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        Map<String, String> parameters = new HashMap<String, String>();
-                        parameters.put("id", databaseHelper.getImage(imageid).getUuid());
-                        return parameters;
-                    }
-                };
-                queue.add(request);
+
             }
         });
 
@@ -236,6 +215,28 @@ public class ShowActivity extends android.app.Fragment{
 
         if(requestCode==70){
             imageid = data.toURI().toString();
+            RequestQueue queue = Volley.newRequestQueue(getContext());
+            String url ="http://172.16.75.172:8000/writehere/";
+            StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
+                @Override
+                public void onResponse(String s) {
+                    Toast.makeText(getContext(), "YESSSSS", Toast.LENGTH_SHORT).show();
+                }
+            },new Response.ErrorListener(){
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    Toast.makeText(getContext(), "Some error occurred -> "+volleyError, Toast.LENGTH_LONG).show();;
+                }
+            }) {
+                //adding parameters to send
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> parameters = new HashMap<String, String>();
+                    parameters.put("id", databaseHelper.getImage(imageid).getUuid());
+                    return parameters;
+                }
+            };
+            queue.add(request);
         }
 
 

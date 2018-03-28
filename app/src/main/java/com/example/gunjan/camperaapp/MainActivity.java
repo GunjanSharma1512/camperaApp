@@ -5,7 +5,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -14,9 +13,7 @@ import android.location.LocationManager;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Environment;
 
@@ -37,7 +34,6 @@ import android.support.v4.app.ActivityCompat;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -88,9 +84,7 @@ public class MainActivity extends Fragment implements LocationListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-    //protected void onCreate(Bundle savedInstanceState) {
-        //super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
+
         myView=inflater.inflate(R.layout.activity_main,container,false);
         takePictureButton = (Button) myView.findViewById(R.id.button_image);
         imageView = (ImageView) myView.findViewById(R.id.imageview);
