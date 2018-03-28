@@ -197,7 +197,8 @@ public class MainActivity extends Fragment implements LocationListener {
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getActivity(), ShowActivity.class));
+                //startActivity(new Intent(getActivity(), ShowActivity.class));
+                getFragmentManager().beginTransaction().replace(R.id.content_frame, new ShowActivity()).commit();
             }
         });
 
@@ -318,7 +319,6 @@ public class MainActivity extends Fragment implements LocationListener {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Bundle bundle = data.getExtras();
        // if (requestCode == 1) {
          //   if (resultCode == RESULT_OK) {
                /* Bundle extras = data.getExtras();
@@ -336,14 +336,12 @@ public class MainActivity extends Fragment implements LocationListener {
        if(requestCode==1){
             if (resultCode == RESULT_OK) {
                 /*Bitmap bm=null;
-                if (data != null) {
-                    try {
-                        bm = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), (Bitmap) bundle.get("data"));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    bm = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), data.getData());
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-               // imageView.setImageBitmap(bm);
+                // imageView.setImageBitmap(bm);
                 imageView.setImageURI(photoURI);
                 try {
                     hashed=hashImage(bm);
@@ -359,7 +357,6 @@ public class MainActivity extends Fragment implements LocationListener {
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(intent, "Select File"),2);
-
 
             }
         }
