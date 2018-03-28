@@ -51,9 +51,11 @@ public class ShowActivity extends android.app.Fragment{
     ImageView imageView;
     TextView Hash, Encryp;
     DatabaseHelper databaseHelper;
-    Button send;
+    Button send, check;
     Bitmap bm;
     View myView;
+    String path =  "";
+    String imageid = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -65,6 +67,7 @@ public class ShowActivity extends android.app.Fragment{
         imageView =  (ImageView) myView.findViewById(R.id.image);
         Hash = (TextView) myView.findViewById(R.id.hash);
         send = (Button) myView.findViewById(R.id.send);
+        check = (Button) myView.findViewById(R.id.check);
         Encryp = (TextView) myView.findViewById(R.id.encryp);
         databaseHelper =  new DatabaseHelper(getContext());
 
@@ -93,12 +96,13 @@ public class ShowActivity extends android.app.Fragment{
                 StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
                     @Override
                     public void onResponse(String s) {
-                        if(s.equals("true")){
+                       /* if(s.equals("true")){
                             Toast.makeText(getContext(), "Uploaded Successful", Toast.LENGTH_LONG).show();
                         }
                         else{
                             Toast.makeText(getContext(), "Not same"+s, Toast.LENGTH_LONG).show();
-                        }
+                        }*/
+                       databaseHelper.insertId(path,s);
                     }
                 },new Response.ErrorListener(){
                     @Override
@@ -113,6 +117,7 @@ public class ShowActivity extends android.app.Fragment{
                         parameters.put("photo", imageString);
                         parameters.put("hashcode", Hash.getText().toString());
                         parameters.put("encrypted", Encryp.getText().toString());
+                        parameters.put("caption", "Some Caption Here");
                         return parameters;
                     }
                 };
@@ -134,6 +139,38 @@ public class ShowActivity extends android.app.Fragment{
                     }
                 });*/
                 Toast.makeText(getContext(), "DONEEEEEE", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        check.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select File"),70);
+                RequestQueue queue = Volley.newRequestQueue(getContext());
+                String url ="http://172.16.75.172:8000/writehere/";
+                StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
+                    @Override
+                    public void onResponse(String s) {
+                        Toast.makeText(getContext(), "YESSSSS", Toast.LENGTH_SHORT).show();
+                    }
+                },new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        Toast.makeText(getContext(), "Some error occurred -> "+volleyError, Toast.LENGTH_LONG).show();;
+                    }
+                }) {
+                    //adding parameters to send
+                    @Override
+                    protected Map<String, String> getParams() throws AuthFailureError {
+                        Map<String, String> parameters = new HashMap<String, String>();
+                        parameters.put("id", databaseHelper.getImage(imageid).getUuid());
+                        return parameters;
+                    }
+                };
+                queue.add(request);
             }
         });
 
@@ -189,12 +226,16 @@ public class ShowActivity extends android.app.Fragment{
                 imageView.setImageBitmap(bm);
                 imageView.setMaxWidth(200);
                 imageView.setMaxHeight(200);
-                String path = data.toURI().toString();
+                path = data.toURI().toString();
                 //String path=RealPathUtil.getRealPathFromURI_API19(getContext(), data.getData());
                 ImageHelper imageHelper = databaseHelper.getImage(path);
                 Hash.setText(imageHelper.getHashcode().toString());
                 Encryp.setText(imageHelper.getEncrypted().toString());
             }
+        }
+
+        if(requestCode==70){
+            imageid = data.toURI().toString();
         }
 
 
