@@ -9,6 +9,24 @@ public class ImageHelper {
     private String imageId;
     private String hashcode;
     private String encrypted;
+    private String caption;
+    private String uuid;
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public String getHashcode() {
         return hashcode;

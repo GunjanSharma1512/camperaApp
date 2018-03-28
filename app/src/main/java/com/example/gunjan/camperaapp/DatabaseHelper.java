@@ -19,7 +19,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private Context context;
     private final String TAG = "DatabaseHelperClass";
-    private static final int databaseVersion = 1;
+    private static final int databaseVersion = 2;
     private static final String databaseName = "dbTest";
     private static final String TABLE_IMAGE = "ImageTable";
 
@@ -29,6 +29,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
    // private static final String IMAGE_BITMAP = "image_bitmap";
     private static final String HASH_ID = "hash_id";
     private static final String ENCRYPTED =  "encrypted";
+    private static final String UUID = "uuid";
+    private static final String CAPTION = "caption";
 
     public DatabaseHelper(Context context) {
         super(context, databaseName, null, databaseVersion);
@@ -41,6 +43,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_ID + " INTEGER PRIMARY KEY ,"
                 + IMAGE_ID + " TEXT,"
                 + HASH_ID + " TEXT,"
+                + UUID + " TEXT,"
+                + CAPTION + " TEXT,"
                 + ENCRYPTED + " TEXT )";
                // + IMAGE_BITMAP + " BLOB )";
         sqLiteDatabase.execSQL(CREATE_IMAGE_TABLE);
@@ -52,12 +56,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-    public void insertImage(String imageId, String hash, String encrypted) {
+    public void insertImage(String imageId, String hash, String encrypted, String caption) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(IMAGE_ID, imageId);
         values.put(HASH_ID, hash);
         values.put(ENCRYPTED, encrypted);
+        values.put(CAPTION, caption);
         /*Bitmap bitmap = ((BitmapDrawable)dbDrawable).getBitmap();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -70,7 +75,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         Cursor cursor2 = db.query(TABLE_IMAGE,
-                new String[] {COL_ID, IMAGE_ID, HASH_ID, ENCRYPTED},IMAGE_ID
+                new String[] {COL_ID, IMAGE_ID, HASH_ID, ENCRYPTED, CAPTION, UUID},IMAGE_ID
                         +" LIKE '"+imageId+"%'", null, null, null, null);
         ImageHelper imageHelper = new ImageHelper();
 
@@ -80,6 +85,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 //imageHelper.setImageByteArray(cursor2.getBlob(2));
                 imageHelper.setHashcode(cursor2.getString(2));
                 imageHelper.setEncrypted(cursor2.getString(3));
+                imageHelper.setCaption(cursor2.getString(4));
+                imageHelper.setUuid(cursor2.getString(5));
             } while (cursor2.moveToNext());
         }
 
@@ -87,4 +94,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return imageHelper;
     }
+
+    public void insertId(String imageId, String id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(IMAGE_ID, imageId);
+        values.put(UUID, id);
+        String selection = IMAGE_ID + "=?" ;
+        db.update(TABLE_IMAGE, values, selection, new String[]{imageId} );
+        db.close();
+    }
+
+
+
+
 }

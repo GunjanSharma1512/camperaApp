@@ -380,7 +380,7 @@ public class MainActivity extends Fragment implements LocationListener {
                Log.d("AAAAAAAAAAAAAAAAAAAAA", data.toURI().toString());
                Log.d("AAAAAAAAAAAAAAAAAAAAA", hashed);
                Log.d("AAAAAAAAAAAAAAAAAAAAA", decrypted.getText().toString());
-               databaseHelper.insertImage(data.toURI().toString(),hashed, decrypted.getText().toString());
+               databaseHelper.insertImage(data.toURI().toString(),hashed, decrypted.getText().toString(), "Some Caption here");
 
 
            }
