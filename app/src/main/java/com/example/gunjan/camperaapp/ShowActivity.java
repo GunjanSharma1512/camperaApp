@@ -46,7 +46,7 @@ import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
 
-public class ShowActivity extends Fragment {
+public class ShowActivity extends android.app.Fragment{
 
     ImageView imageView;
     TextView Hash, Encryp;
@@ -60,6 +60,7 @@ public class ShowActivity extends Fragment {
         //protected void onCreate(Bundle savedInstanceState) {
         //super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
+        ((StartActivity) getActivity()).setActionBarTitle("Upload Photo");
         myView = inflater.inflate(R.layout.activity_show, container, false);
         imageView =  (ImageView) myView.findViewById(R.id.image);
         Hash = (TextView) myView.findViewById(R.id.hash);

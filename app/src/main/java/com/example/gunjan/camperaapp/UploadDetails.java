@@ -20,6 +20,7 @@ public class UploadDetails extends Fragment {
         //protected void onCreate(Bundle savedInstanceState) {
         //super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
+        ((StartActivity) getActivity()).setActionBarTitle("Upload Details ");
         myView = inflater.inflate(R.layout.upload_details, container, false);
         submit=(Button) myView.findViewById(R.id.submit);
 

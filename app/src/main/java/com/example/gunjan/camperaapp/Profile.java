@@ -18,7 +18,10 @@ public class Profile extends Fragment {
         //super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
         myView = inflater.inflate(R.layout.activity_profile, container, false);
+        ((StartActivity) getActivity()).setActionBarTitle("Profile");
         return myView;
 
     }
+
+
 }

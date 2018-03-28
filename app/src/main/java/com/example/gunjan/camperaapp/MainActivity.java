@@ -91,6 +91,7 @@ public class MainActivity extends Fragment implements LocationListener {
     //protected void onCreate(Bundle savedInstanceState) {
         //super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
+        ((StartActivity) getActivity()).setActionBarTitle("Take Photo");
         myView=inflater.inflate(R.layout.activity_main,container,false);
         takePictureButton = (Button) myView.findViewById(R.id.button_image);
         imageView = (ImageView) myView.findViewById(R.id.imageview);
@@ -197,7 +198,8 @@ public class MainActivity extends Fragment implements LocationListener {
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getActivity(), ShowActivity.class));
+                //startActivity(new Intent(getActivity(), ShowActivity.class));
+                getFragmentManager().beginTransaction().replace(R.id.content_frame,new ShowActivity()).commit();
             }
         });
 
