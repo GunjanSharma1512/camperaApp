@@ -132,7 +132,7 @@ public class MainActivity extends Fragment implements LocationListener {
                 int hours = calendar.get(Calendar.HOUR_OF_DAY);
                 int minute = calendar.get(Calendar.MINUTE);
                 int day = calendar.get(Calendar.DAY_OF_MONTH);
-                int month = calendar.get(Calendar.MONTH);
+                int month = calendar.get(Calendar.MONTH)+1;
                 int year = calendar.get(Calendar.YEAR);
 
                 currentCity.setText("TIME: " + hours + ":" + minute + " DATE: " + day + "/" + month + "/" + year);

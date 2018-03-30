@@ -39,6 +39,7 @@ public class StartActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        displaySelectedScreen(R.id.take_photo);
     }
 
     @Override
@@ -90,7 +91,12 @@ public class StartActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+       displaySelectedScreen(item.getItemId());
+        return true;
+    }
+
+    public void displaySelectedScreen(int itemid){
+        int id = itemid;
 
         FragmentManager fragmentmanager=getFragmentManager();
         if (id == R.id.profile) {
@@ -113,6 +119,5 @@ public class StartActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 }
