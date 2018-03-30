@@ -2,6 +2,7 @@ package com.example.gunjan.camperaapp;
 
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +24,7 @@ public class Registration extends AppCompatActivity {
     Button submit;
     DatabaseHelper databaseHelper;
     TextInputEditText agency, add, contact, email, pass, cpass;
+    TextInputLayout Pass, CPass;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,13 +36,15 @@ public class Registration extends AppCompatActivity {
         email = (TextInputEditText) findViewById(R.id.email);
         pass = (TextInputEditText) findViewById(R.id.pass);
         cpass = (TextInputEditText) findViewById(R.id.cpass);
+        Pass = (TextInputLayout) findViewById(R.id.textInputLayout1);
+        CPass = (TextInputLayout) findViewById(R.id.textInputLayout);
 //        databaseHelper =  new DatabaseHelper(Registration.this);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (pass.getText().toString().equals(cpass.getText().toString())) {
                     RequestQueue queue = Volley.newRequestQueue(Registration.this);
-                    String url = "http://192.168.43.232:8000/register/";
+                    String url = Constants.url+ "register/";
                     StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                         @Override
                         public void onResponse(String s) {
@@ -70,7 +74,6 @@ public class Registration extends AppCompatActivity {
                             parameters.put("contact", contact.getText().toString());
                             parameters.put("email", email.getText().toString());
                             parameters.put("pass", pass.getText().toString());
-                            parameters.put("cpass", cpass.getText().toString());
                             return parameters;
                         }
                     };
@@ -78,6 +81,11 @@ public class Registration extends AppCompatActivity {
 
 
                 } else {
+                    Toast.makeText(Registration.this, "Passwords do NOT match", Toast.LENGTH_LONG).show();
+                    Pass.setErrorEnabled(true);
+                    Pass.setError("Incorrect");
+                    CPass.setCounterEnabled(true);
+                    CPass.setError("Incorrect");
                 }
 
             }

@@ -93,7 +93,7 @@ public class ShowActivity extends android.app.Fragment{
                 byte[] imageBytes = baos.toByteArray();
                 final String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
                 RequestQueue queue = Volley.newRequestQueue(getContext());
-                String url ="http://192.168.43.232:8000/unhash/";
+                String url = Constants.url + "unhash/";
                 StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
                     @Override
                     public void onResponse(String s) {
@@ -221,7 +221,7 @@ public class ShowActivity extends android.app.Fragment{
             imageid = data.toURI().toString();
             RequestQueue queue = Volley.newRequestQueue(getContext());
 
-            String url ="http://192.168.43.232:8000/constraint_match/";
+            String url = Constants.url + "constraint_match/";
             StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
                 @Override
                 public void onResponse(String s) {
