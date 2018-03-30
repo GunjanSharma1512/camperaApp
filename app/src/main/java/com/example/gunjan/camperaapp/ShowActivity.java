@@ -102,7 +102,7 @@ public class ShowActivity extends android.app.Fragment{
                         else{
                             Toast.makeText(getContext(), "Not same"+s, Toast.LENGTH_LONG).show();
                         }*/
-                        Toast.makeText(getContext(), "Uploaded Successful. Your submission ID is: "+s, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Validate your submission! ", Toast.LENGTH_LONG).show();
 
                         databaseHelper.insertId(path,s);
                     }
