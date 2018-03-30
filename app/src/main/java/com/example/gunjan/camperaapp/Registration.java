@@ -54,6 +54,13 @@ public class Registration extends AppCompatActivity {
                         else{
                             Toast.makeText(getContext(), "Not same"+s, Toast.LENGTH_LONG).show();
                         }*/
+                       agency.setText("");
+                       add.setText("");
+                       contact.setText("");
+                       email.setText("");
+                       pass.setText("");
+                       cpass.setText("");
+                       onBackPressed();
                             Toast.makeText(Registration.this, "Registration Successful. Your submission ID is: " + s, Toast.LENGTH_LONG).show();
 
 //                        databaseHelper.insertId(path, s);
@@ -61,7 +68,7 @@ public class Registration extends AppCompatActivity {
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError volleyError) {
-                            Toast.makeText(Registration.this, "Not Registered" + volleyError, Toast.LENGTH_LONG).show();
+                            Toast.makeText(Registration.this,  volleyError.toString(), Toast.LENGTH_LONG).show();
                             ;
                         }
                     }) {

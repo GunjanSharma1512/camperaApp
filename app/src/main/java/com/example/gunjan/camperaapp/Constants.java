@@ -5,5 +5,6 @@ package com.example.gunjan.camperaapp;
  */
 
 public class Constants {
-    public static String url = "http://192.168.43.232:8000/";
+    public static String url = "http://172.16.1.221:8000/";
+    //Change url whenever necessary
 }
