@@ -13,6 +13,7 @@ import android.location.LocationManager;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.FileProvider;
 import android.os.Bundle;
 import android.os.Environment;
@@ -81,6 +82,7 @@ public class MainActivity extends Fragment implements LocationListener {
     Cipher cipher, cipher1;
     View myView;
     private DatabaseHelper databaseHelper;
+    TextInputEditText caption;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -93,6 +95,7 @@ public class MainActivity extends Fragment implements LocationListener {
         upload = (Button) myView.findViewById(R.id.upload);
         box = (TextView)  myView.findViewById(R.id.box);
         databaseHelper = new DatabaseHelper(getActivity());
+        caption = (TextInputEditText) myView.findViewById(R.id.caption);
 
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             takePictureButton.setEnabled(false);
@@ -374,7 +377,7 @@ public class MainActivity extends Fragment implements LocationListener {
                Log.d("AAAAAAAAAAAAAAAAAAAAA", data.toURI().toString());
                Log.d("AAAAAAAAAAAAAAAAAAAAA", hashed);
                Log.d("AAAAAAAAAAAAAAAAAAAAA", decrypted.getText().toString());
-               databaseHelper.insertImage(data.toURI().toString(),hashed, decrypted.getText().toString(), "Some Caption here");
+               databaseHelper.insertImage(data.toURI().toString(),hashed, decrypted.getText().toString(), caption.getText().toString());
 
 
            }
@@ -413,7 +416,7 @@ public class MainActivity extends Fragment implements LocationListener {
 
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
-        box.setText(mCurrentPhotoPath);
+        //box.setText(mCurrentPhotoPath);
         return image;
     }
 

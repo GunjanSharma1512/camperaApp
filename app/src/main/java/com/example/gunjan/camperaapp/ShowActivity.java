@@ -49,7 +49,7 @@ import static android.app.Activity.RESULT_OK;
 public class ShowActivity extends android.app.Fragment{
 
     ImageView imageView;
-    TextView Hash, Encryp;
+    TextView Hash, Encryp, Caption;
     DatabaseHelper databaseHelper;
     Button send, check;
     Bitmap bm;
@@ -68,6 +68,7 @@ public class ShowActivity extends android.app.Fragment{
         Hash = (TextView) myView.findViewById(R.id.hash);
         send = (Button) myView.findViewById(R.id.send);
         check = (Button) myView.findViewById(R.id.check);
+        Caption = (TextView) myView.findViewById(R.id.caption);
         Encryp = (TextView) myView.findViewById(R.id.encryp);
         databaseHelper =  new DatabaseHelper(getContext());
 
@@ -119,7 +120,7 @@ public class ShowActivity extends android.app.Fragment{
                         parameters.put("photo", imageString);
                         parameters.put("hashcode", Hash.getText().toString());
                         parameters.put("encrypted", Encryp.getText().toString());
-                        parameters.put("caption", "Some Caption Here");
+                        parameters.put("caption", Caption.getText().toString());
                         return parameters;
                     }
                 };
@@ -212,6 +213,7 @@ public class ShowActivity extends android.app.Fragment{
                 ImageHelper imageHelper = databaseHelper.getImage(path);
                 Hash.setText(imageHelper.getHashcode().toString());
                 Encryp.setText(imageHelper.getEncrypted().toString());
+                Caption.setText(imageHelper.getCaption().toString());
             }
         }
 

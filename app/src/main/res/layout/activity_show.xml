@@ -29,6 +29,13 @@
         android:textStyle="bold"
         android:id="@+id/encryp"/>
 
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Caption:   "
+        android:textStyle="bold"
+        android:id="@+id/caption"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
