@@ -96,7 +96,7 @@ public class ShowActivity extends android.app.Fragment{
                         else{
                             Toast.makeText(getContext(), "Not same"+s, Toast.LENGTH_LONG).show();
                         }*/
-                        Toast.makeText(getContext(), "Validate your submission! ", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "ID received: "+s, Toast.LENGTH_LONG).show();
 
                         databaseHelper.insertId(path,s);
                     }
@@ -140,7 +140,7 @@ public class ShowActivity extends android.app.Fragment{
                     public void run() {
                         check.setVisibility(View.VISIBLE);
                     }},3000);*/
-                new CountDownTimer(120000, 120000){
+                /*new CountDownTimer(120000, 120000){
                     @Override
                     public void onTick(long millisUntilFinished) {
 
@@ -150,7 +150,7 @@ public class ShowActivity extends android.app.Fragment{
                     public void onFinish() {
                             check.setVisibility(View.VISIBLE);
                     }
-                }.start();
+                }.start();*/
             }
         });
 
@@ -230,15 +230,19 @@ public class ShowActivity extends android.app.Fragment{
             imageid = data.toURI().toString();
             RequestQueue queue = Volley.newRequestQueue(getContext());
 
-            String url = Constants.url + "constrain_match/";
+            String url = Constants.url + "constraint_match/";
             StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
                 @Override
                 public void onResponse(String s) {
 
                     if(s.equals("matched"))
-                        Toast.makeText(getContext(), "Your image has been validated", Toast.LENGTH_SHORT).show();
-                    else
-                        Toast.makeText(getContext(), "Your image is invalid", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Your image has been correctly validated", Toast.LENGTH_SHORT).show();
+                    else if(s.equals("not matched"))
+                        Toast.makeText(getContext(), "Incorrect details", Toast.LENGTH_SHORT).show();
+                    else if(s.equals("warning"))
+                        Toast.makeText(getContext(), "Your image has been tampered", Toast.LENGTH_SHORT).show();
+                    else if(s.equals("pending"))
+                        Toast.makeText(getContext(), "Validation process still under progress", Toast.LENGTH_SHORT).show();
 
                 }
             },new Response.ErrorListener(){
