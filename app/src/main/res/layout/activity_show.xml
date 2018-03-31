@@ -50,6 +50,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/round"
         android:id="@+id/check"
-        android:text="Validate"/>
+        android:text="Validate"
+        android:visibility="gone"/>
 
 </LinearLayout>

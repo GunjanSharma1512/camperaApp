@@ -1,21 +1,15 @@
 package com.example.gunjan.camperaapp;
 
 import android.Manifest;
-import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.location.LocationManager;
-import android.net.Uri;
-import android.os.ParcelFileDescriptor;
-import android.provider.ContactsContract;
+import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,18 +23,12 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.w3c.dom.Text;
-
 import java.io.ByteArrayOutputStream;
-import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,6 +45,9 @@ public class ShowActivity extends android.app.Fragment{
     String path =  "";
     String imageid = "";
 
+
+    Handler handler;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +62,7 @@ public class ShowActivity extends android.app.Fragment{
         Caption = (TextView) myView.findViewById(R.id.caption);
         Encryp = (TextView) myView.findViewById(R.id.encryp);
         databaseHelper =  new DatabaseHelper(getContext());
+        handler=new Handler();
 
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -143,6 +135,22 @@ public class ShowActivity extends android.app.Fragment{
                     }
                 });*/
                 Toast.makeText(getContext(), "Sent to Server", Toast.LENGTH_SHORT).show();
+                /*handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        check.setVisibility(View.VISIBLE);
+                    }},3000);*/
+                new CountDownTimer(120000, 120000){
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+                            check.setVisibility(View.VISIBLE);
+                    }
+                }.start();
             }
         });
 
@@ -222,7 +230,7 @@ public class ShowActivity extends android.app.Fragment{
             imageid = data.toURI().toString();
             RequestQueue queue = Volley.newRequestQueue(getContext());
 
-            String url = Constants.url + "constraint_match/";
+            String url = Constants.url + "constrain_match/";
             StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
                 @Override
                 public void onResponse(String s) {

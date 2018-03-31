@@ -203,6 +203,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/textInputLayout"
         android:layout_centerHorizontal="true"
-        android:text="Submit" />
+        android:text="Submit"
+        android:background="@drawable/round"
+        android:layout_marginLeft="150dp"/>
 
 </RelativeLayout>

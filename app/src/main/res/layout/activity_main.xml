@@ -10,11 +10,12 @@
 
    <Button
         android:id="@+id/button_image"
-        android:layout_width="wrap_content"
+        android:layout_width="125dp"
         android:layout_height="48dp"
         android:layout_gravity="center_horizontal|center|center_vertical"
         android:gravity="center_vertical|center|center_horizontal"
         android:text="Take a picture!"
+        android:background="@drawable/round"
         />
 
     <ImageView
@@ -45,11 +46,14 @@
             android:layout_height="wrap_content"
             android:hint="Photo Caption"
             android:textColorHint="@android:color/darker_gray"/>
+
         <Button
+            android:id="@+id/okay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/okay"
-            android:text="OK"/>
+            android:background="@drawable/round"
+            android:text="OK"
+            android:layout_marginLeft="140dp"/>
     </android.support.design.widget.TextInputLayout>
 
     <TextView
@@ -99,6 +103,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="upload"
-        android:id="@+id/upload"/>
+        android:id="@+id/upload"
+        android:background="@drawable/round"
+        android:layout_marginLeft="150dp"/>
 
 </LinearLayout>
