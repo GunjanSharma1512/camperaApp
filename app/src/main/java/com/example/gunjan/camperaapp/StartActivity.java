@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.MainThread;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -112,7 +113,8 @@ public class StartActivity extends AppCompatActivity
 
         } else if (id == R.id.upload_details) {
 
-            getFragmentManager().beginTransaction().replace(R.id.content_frame,new UploadDetails()).commit();
+            //getFragmentManager().beginTransaction().replace(R.id.content_frame,new UploadDetails()).commit();
+            startActivity(new Intent(StartActivity.this, RecyclerActivity.class));
 
         } /*else if (id == R.id.logout) {
         }*/

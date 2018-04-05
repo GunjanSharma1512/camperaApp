@@ -39,8 +39,8 @@ public class ShowActivity extends android.app.Fragment{
     ImageView imageView;
     TextView Hash, Encryp, Caption;
     DatabaseHelper databaseHelper;
-    Button send, check;
-    Bitmap bm;
+    Button send, check, sel;
+    Bitmap bm, bitmap;
     View myView;
     String path =  "";
     String imageid = "";
@@ -58,6 +58,7 @@ public class ShowActivity extends android.app.Fragment{
         imageView =  (ImageView) myView.findViewById(R.id.image);
         Hash = (TextView) myView.findViewById(R.id.hash);
         send = (Button) myView.findViewById(R.id.send);
+        sel = (Button) myView.findViewById(R.id.select);
         check = (Button) myView.findViewById(R.id.check);
         Caption = (TextView) myView.findViewById(R.id.caption);
         Encryp = (TextView) myView.findViewById(R.id.encryp);
@@ -72,17 +73,28 @@ public class ShowActivity extends android.app.Fragment{
             Toast.makeText(getContext(), "allow external read", Toast.LENGTH_SHORT).show();
         }
 
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select File"),1);
+
+        sel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select File"),1);
+            }
+        });
 
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                if(bm!=null){
+                    bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                }
+                else{
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                }
                 byte[] imageBytes = baos.toByteArray();
                 final String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
                 RequestQueue queue = Volley.newRequestQueue(getContext());
@@ -97,8 +109,19 @@ public class ShowActivity extends android.app.Fragment{
                             Toast.makeText(getContext(), "Not same"+s, Toast.LENGTH_LONG).show();
                         }*/
                         Toast.makeText(getContext(), "ID received: "+s, Toast.LENGTH_LONG).show();
-
                         databaseHelper.insertId(path,s);
+                        new CountDownTimer(30000,30000){
+                            @Override
+                            public void onTick(long l) {
+
+                            }
+
+                            @Override
+                            public void onFinish() {
+                                Toast.makeText(getContext(), "Validate your submission", Toast.LENGTH_LONG);
+                                check.setVisibility(View.VISIBLE);
+                            }
+                        }.start();
                     }
                 },new Response.ErrorListener(){
                     @Override
@@ -160,6 +183,7 @@ public class ShowActivity extends android.app.Fragment{
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 startActivityForResult(Intent.createChooser(intent, "Select File"),70);
 
             }
@@ -206,18 +230,21 @@ public class ShowActivity extends android.app.Fragment{
                 }
                 databaseHelper.insertImage(photoURI.toString(),hashed, decrypted.getText().toString());*/
                 bm=null;
-                if (data != null) {
+                bitmap = null;
+                if (data.getData() != null) {
                     try {
                         bm = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), data.getData());
+                        imageView.setImageBitmap(bm);
+                        path = data.toURI().toString();
                         Log.d("AAAAAAAAAAAAAAAA", data.toURI().toString());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
-                imageView.setImageBitmap(bm);
+
                 imageView.setMaxWidth(200);
                 imageView.setMaxHeight(200);
-                path = data.toURI().toString();
+
                 //String path=RealPathUtil.getRealPathFromURI_API19(getContext(), data.getData());
                 ImageHelper imageHelper = databaseHelper.getImage(path);
                 Hash.setText(imageHelper.getHashcode().toString());
@@ -230,7 +257,7 @@ public class ShowActivity extends android.app.Fragment{
             imageid = data.toURI().toString();
             RequestQueue queue = Volley.newRequestQueue(getContext());
 
-            String url = Constants.url + "constraint_match/";
+            String url = Constants.url + "check/";
             StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
                 @Override
                 public void onResponse(String s) {
@@ -238,11 +265,9 @@ public class ShowActivity extends android.app.Fragment{
                     if(s.equals("matched"))
                         Toast.makeText(getContext(), "Your image has been correctly validated", Toast.LENGTH_SHORT).show();
                     else if(s.equals("not matched"))
-                        Toast.makeText(getContext(), "Incorrect details", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Incorrect Location", Toast.LENGTH_SHORT).show();
                     else if(s.equals("warning"))
                         Toast.makeText(getContext(), "Your image has been tampered", Toast.LENGTH_SHORT).show();
-                    else if(s.equals("pending"))
-                        Toast.makeText(getContext(), "Validation process still under progress", Toast.LENGTH_SHORT).show();
 
                 }
             },new Response.ErrorListener(){
@@ -256,6 +281,7 @@ public class ShowActivity extends android.app.Fragment{
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> parameters = new HashMap<String, String>();
                     parameters.put("id", databaseHelper.getImage(imageid).getUuid());
+                    Log.d("AAAAAAAAAAAAAAAAA",databaseHelper.getImage(imageid).getUuid() );
                     return parameters;
                 }
             };

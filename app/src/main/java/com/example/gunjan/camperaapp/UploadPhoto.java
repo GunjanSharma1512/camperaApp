@@ -43,7 +43,7 @@ public class UploadPhoto extends Fragment {
     ImageView imageView;
     TextView Hash, Encryp;
     DatabaseHelper databaseHelper;
-    Button upload;
+    Button upload, sel;
     Bitmap bm;
 
     @Override
@@ -56,6 +56,7 @@ public class UploadPhoto extends Fragment {
         imageView =  (ImageView)myView.findViewById(R.id.image);
         Hash = (TextView) myView.findViewById(R.id.hash);
         upload = (Button) myView.findViewById(R.id.send);
+        sel = (Button) myView.findViewById(R.id.select);
         Encryp = (TextView) myView.findViewById(R.id.encryp);
         databaseHelper =  new DatabaseHelper(getContext());
 
@@ -67,10 +68,17 @@ public class UploadPhoto extends Fragment {
             Toast.makeText(getContext(), "allow external read", Toast.LENGTH_SHORT).show();
         }
 
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select File"),1);
+        sel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select File"),1);
+            }
+        });
+
 
         upload.setOnClickListener(new View.OnClickListener() {
                                       public void onClick(View myView) {
@@ -109,7 +117,7 @@ public class UploadPhoto extends Fragment {
                                           };
                                           queue.add(request);
 
-                                          Toast.makeText(getContext(), "DONEEEEEE", Toast.LENGTH_SHORT).show();
+                                          Toast.makeText(getContext(), "Sent to Server", Toast.LENGTH_SHORT).show();
                                       }
                                   }
         );

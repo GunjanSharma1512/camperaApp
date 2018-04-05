@@ -33,7 +33,6 @@ public class Login_Registration extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 if (username.getText().toString().equals("username") && password.getText().toString().equals("password")) {
-                    Toast.makeText(getApplicationContext(), "Redirecting...", Toast.LENGTH_SHORT).show();
                     Intent myIntent = new Intent(Login_Registration.this, StartActivity.class);
                     startActivity(myIntent);
                 } else {

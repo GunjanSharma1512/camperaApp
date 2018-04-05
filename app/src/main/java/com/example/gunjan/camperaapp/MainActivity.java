@@ -65,7 +65,7 @@ public class MainActivity extends Fragment implements LocationListener {
     String mCurrentPhotoPath;
     File photoFile;
     Uri photoURI;
-    Button upload, ok;
+    Button  ok;
     private TextView latitudePosition;
     private TextView longitudePosition;
     private TextView currentCity,hashid,decrypted;
@@ -92,7 +92,6 @@ public class MainActivity extends Fragment implements LocationListener {
         imageView = (ImageView) myView.findViewById(R.id.imageview);
         hashid = (TextView) myView.findViewById(R.id.hashid);
         decrypted = (TextView) myView.findViewById(R.id.decrypted);
-        upload = (Button) myView.findViewById(R.id.upload);
         ok = (Button) myView.findViewById(R.id.okay);
         box = (TextView)  myView.findViewById(R.id.box);
         databaseHelper = new DatabaseHelper(getActivity());
@@ -192,13 +191,7 @@ public class MainActivity extends Fragment implements LocationListener {
             }
         });
 
-        upload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //startActivity(new Intent(getActivity(), ShowActivity.class));
-                getFragmentManager().beginTransaction().replace(R.id.content_frame, new ShowActivity()).commit();
-            }
-        });
+
 
 
 
@@ -371,6 +364,7 @@ public class MainActivity extends Fragment implements LocationListener {
                }
                imageView.setImageBitmap(bm);
                caption.setVisibility(View.VISIBLE);
+               ok.setVisibility(View.VISIBLE);
                Toast.makeText(getContext(), "ENTER CAPTION!", Toast.LENGTH_SHORT).show();
 
                final Bitmap finalBm = bm;
@@ -379,9 +373,10 @@ public class MainActivity extends Fragment implements LocationListener {
                    public void onClick(View view) {
                        try {
                            hashed=hashImage(finalBm);
-                           Log.d("AAAAAAAAAAAAAAAAAAAAA", data.toURI().toString());
-                           Log.d("AAAAAAAAAAAAAAAAAAAAA", decrypted.getText().toString());
+                           Log.d("AAAAAAAAAAAAAAAA", hashed);
                            databaseHelper.insertImage(data.toURI().toString(),hashed, decrypted.getText().toString(), caption.getText().toString());
+                           Toast.makeText(getContext(), "PHOTO SAVED", Toast.LENGTH_SHORT).show();
+                           getFragmentManager().beginTransaction().replace(R.id.content_frame,new MainActivity()).commit();
                        } catch (NoSuchAlgorithmException e) {
                            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                        }
