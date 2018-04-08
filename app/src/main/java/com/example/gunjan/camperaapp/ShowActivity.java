@@ -92,6 +92,7 @@ public class ShowActivity extends android.app.Fragment{
             @Override
             public void onClick(View v) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                check.setVisibility(View.GONE);
                 if(bm!=null){
                     bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                 }
@@ -130,7 +131,7 @@ public class ShowActivity extends android.app.Fragment{
                 },new Response.ErrorListener(){
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
-                        Toast.makeText(getContext(), "Some error occurred -> "+volleyError, Toast.LENGTH_LONG).show();;
+                        Toast.makeText(getContext(), "Some error occurred -> "+volleyError, Toast.LENGTH_LONG).show();
                     }
                 }) {
                     //adding parameters to send

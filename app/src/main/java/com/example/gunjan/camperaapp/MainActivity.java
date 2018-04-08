@@ -417,7 +417,7 @@ public class MainActivity extends Fragment implements LocationListener {
                            Log.d("AAAAAAAAAAAAAAAA", hashed);
                            idef = data.toURI().toString();
                            databaseHelper.insertImage(data.toURI().toString(),hashed, decrypted.getText().toString(), caption.getText().toString(), stream.toByteArray());
-                           autoUpload(finalBm);
+                           autoUpload(data.toURI().toString(), hashed, decrypted.getText().toString(), caption.getText().toString());
                            Log.d("ARRRRRRRAAAYY", stream.toByteArray().toString());
                            Toast.makeText(getContext(), "PHOTO SAVED", Toast.LENGTH_SHORT).show();
                            getFragmentManager().beginTransaction().replace(R.id.content_frame,new MainActivity()).commit();
@@ -553,7 +553,7 @@ public class MainActivity extends Fragment implements LocationListener {
         return Arrays.copyOfRange(b2, 1, b2.length);
     }
 
-    public void autoUpload(Bitmap bim){
+    public void autoUpload(final String ide, final String h,final String e,final String c){
 
         ConnectivityManager connectivity = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null) {
@@ -566,21 +566,13 @@ public class MainActivity extends Fragment implements LocationListener {
                             Toast.makeText(getContext(), "Internet available via Broadcast receiver", Toast.LENGTH_SHORT).show();
                             isConnected = true;
 
-                            final ImageHelper imageHelper = databaseHelper.getImage(idef);
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            if(bim!=null){
-                                bim.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                            }
-
-                            byte[] imageBytes = baos.toByteArray();
-                            final String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
                             RequestQueue queue = Volley.newRequestQueue(getContext());
                             String url = Constants.url + "unhash/";
                             StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
                                 @Override
                                 public void onResponse(String s) {
-                                    databaseHelper.changeUpld(imageHelper.getImageId());
-                                    Toast.makeText(getContext(),"Uploaded", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getContext(), "ID received: "+s, Toast.LENGTH_LONG).show();
+                                    databaseHelper.insertId(ide,s);
                                 }
                             },new Response.ErrorListener(){
                                 @Override
@@ -593,10 +585,14 @@ public class MainActivity extends Fragment implements LocationListener {
                                 @Override
                                 protected Map<String, String> getParams() throws AuthFailureError {
                                     Map<String, String> parameters = new HashMap<String, String>();
-                                    parameters.put("photo", imageString);
-                                    parameters.put("hashcode", imageHelper.getHashcode());
-                                    parameters.put("encrypted", imageHelper.getEncrypted());
-                                    parameters.put("caption", imageHelper.getCaption());
+                                    parameters.put("photo", ide);
+                                    parameters.put("hashcode", h);
+                                    parameters.put("encrypted", e);
+                                    parameters.put("caption", c);
+                                    Log.d("YAAAAS", ide);
+                                    Log.d("YAAAAS", h);
+                                    Log.d("YAAAAS", e);
+                                    Log.d("YAAAAS", c);
                                     return parameters;
                                 }
                             };
