@@ -102,6 +102,7 @@ public class MainActivity extends Fragment implements LocationListener {
     View myView;
     private DatabaseHelper databaseHelper;
     TextInputEditText caption;
+    Context context;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -115,6 +116,7 @@ public class MainActivity extends Fragment implements LocationListener {
         box = (TextView)  myView.findViewById(R.id.box);
         databaseHelper = new DatabaseHelper(getActivity());
         caption = (TextInputEditText) myView.findViewById(R.id.caption);
+        context = getContext();
 
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             takePictureButton.setEnabled(false);
@@ -416,8 +418,15 @@ public class MainActivity extends Fragment implements LocationListener {
                            hashed=hashImage(finalBm);
                            Log.d("AAAAAAAAAAAAAAAA", hashed);
                            idef = data.toURI().toString();
+                           ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                           if(finalBm!=null){
+                               finalBm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                           }
+
+                           byte[] imageBytes = baos.toByteArray();
+                           final String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
                            databaseHelper.insertImage(data.toURI().toString(),hashed, decrypted.getText().toString(), caption.getText().toString(), stream.toByteArray());
-                           autoUpload(data.toURI().toString(), hashed, decrypted.getText().toString(), caption.getText().toString());
+                           autoUpload(data.toURI().toString(), imageString, hashed, decrypted.getText().toString(), caption.getText().toString());
                            Log.d("ARRRRRRRAAAYY", stream.toByteArray().toString());
                            Toast.makeText(getContext(), "PHOTO SAVED", Toast.LENGTH_SHORT).show();
                            getFragmentManager().beginTransaction().replace(R.id.content_frame,new MainActivity()).commit();
@@ -553,7 +562,7 @@ public class MainActivity extends Fragment implements LocationListener {
         return Arrays.copyOfRange(b2, 1, b2.length);
     }
 
-    public void autoUpload(final String ide, final String h,final String e,final String c){
+    public void autoUpload(final String iden, final String ide, final String h,final String e,final String c){
 
         ConnectivityManager connectivity = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null) {
@@ -571,14 +580,14 @@ public class MainActivity extends Fragment implements LocationListener {
                             StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
                                 @Override
                                 public void onResponse(String s) {
-                                    Toast.makeText(getContext(), "ID received: "+s, Toast.LENGTH_LONG).show();
-                                    databaseHelper.insertId(ide,s);
+                                    Toast.makeText(context, "ID received: "+s, Toast.LENGTH_LONG).show();
+                                    databaseHelper.insertId(iden,s);
                                 }
                             },new Response.ErrorListener(){
                                 @Override
                                 public void onErrorResponse(VolleyError volleyError) {
-                                    Log.d("ERRRRRROR", String.valueOf(volleyError));
-                                    //Toast.makeText(getContext(), "Upload error -> "+volleyError, Toast.LENGTH_LONG).show();
+                                   Log.d("ERRRRRROR", String.valueOf(volleyError));
+                                    Toast.makeText(context, "Upload error -> "+volleyError, Toast.LENGTH_LONG).show();
                                 }
                             }) {
                                 //adding parameters to send
