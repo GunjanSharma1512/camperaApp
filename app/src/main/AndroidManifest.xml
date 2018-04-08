@@ -63,6 +63,10 @@
             </intent-filter>
         </receiver>
 
+        <service
+            android:name=".UploadService"
+            android:exported="false" />
+
         <activity
             android:name=".StartActivity"
             android:label="@string/title_activity_start"

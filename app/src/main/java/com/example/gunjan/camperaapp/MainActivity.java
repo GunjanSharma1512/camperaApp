@@ -1,8 +1,10 @@
 package com.example.gunjan.camperaapp;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,7 +14,19 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.gunjan.camperaapp.NetworkChangeReceiver;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -46,8 +60,10 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -60,6 +76,9 @@ import static android.app.Activity.RESULT_OK;
 public class MainActivity extends Fragment implements LocationListener {
     private Button takePictureButton;
     private ImageView imageView;
+    private boolean isConnected = false;
+    Bitmap bm;
+    String idef = "";
     Uri file;
     private static TextView box;
     String mCurrentPhotoPath;
@@ -120,10 +139,12 @@ public class MainActivity extends Fragment implements LocationListener {
 
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             if (location != null) {
-                latitudePosition.setText(String.valueOf(location.getLatitude()));
+                /*latitudePosition.setText(String.valueOf(location.getLatitude()));
                 longitudePosition.setText(String.valueOf(location.getLongitude()));
                 Log.d("AAAAAAAAAAAAAA", String.valueOf(location.getLatitude()));
-                Log.d("AAAAAAAAAAAAAA", String.valueOf(location.getLongitude()));
+                Log.d("AAAAAAAAAAAAAA", String.valueOf(location.getLongitude()));*/
+                latitudePosition.setText("28.62");
+                longitudePosition.setText("77.22");
                 ///////////////////
 
                 Calendar calendar = Calendar.getInstance();
@@ -135,7 +156,7 @@ public class MainActivity extends Fragment implements LocationListener {
                 int year = calendar.get(Calendar.YEAR);
 
                 currentCity.setText("TIME: " + hours + ":" + minute + " DATE: " + day + "/" + month + "/" + year);
-                geotaggedData=String.valueOf(location.getLatitude())+"_"+String.valueOf(location.getLongitude())+"_"+String.valueOf(hours)+"_"+String.valueOf(minute)+"_"+String.valueOf(day)+"_"+String.valueOf(month)+"_"+String.valueOf(year)+"_";
+                geotaggedData="28.62"+"_"+"77.22"+"_"+String.valueOf(hours)+"_"+String.valueOf(minute)+"_"+String.valueOf(day)+"_"+String.valueOf(month)+"_"+String.valueOf(year)+"_";
                 try {
                     encryptedData=encrypt(geotaggedData);
                 } catch (Exception e) {
@@ -157,7 +178,7 @@ public class MainActivity extends Fragment implements LocationListener {
                 }
                 ///////////////////////
                 //TODO - WHY THIS?
-                getAddressFromLocation(location, getContext(), new GeoCoderHandler());
+                //getAddressFromLocation(location, getContext(), new GeoCoderHandler());
             }
         } else {
             // showGPSDisabledAlertToUser();
@@ -193,6 +214,24 @@ public class MainActivity extends Fragment implements LocationListener {
 
 
 
+        BroadcastReceiver receiver = new BroadcastReceiver(){
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Bundle bundle = intent.getExtras();
+
+                if (bundle != null) {
+                    int resultCode = bundle.getInt(UploadService.RESULT);
+                    if (resultCode == RESULT_OK) {
+                        Toast.makeText(getContext(),
+                                "Upload successful",
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getContext(), "Upload failed", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        };
 
 
      return myView;
@@ -354,7 +393,7 @@ public class MainActivity extends Fragment implements LocationListener {
 
        else if(requestCode==2){
            if (resultCode == RESULT_OK) {
-               Bitmap bm=null;
+               bm=null;
                if (data != null) {
                    try {
                        bm = MediaStore.Images.Media.getBitmap( getContext().getContentResolver(), data.getData());
@@ -363,6 +402,8 @@ public class MainActivity extends Fragment implements LocationListener {
                    }
                }
                imageView.setImageBitmap(bm);
+               final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+               bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                caption.setVisibility(View.VISIBLE);
                ok.setVisibility(View.VISIBLE);
                Toast.makeText(getContext(), "ENTER CAPTION!", Toast.LENGTH_SHORT).show();
@@ -374,7 +415,10 @@ public class MainActivity extends Fragment implements LocationListener {
                        try {
                            hashed=hashImage(finalBm);
                            Log.d("AAAAAAAAAAAAAAAA", hashed);
-                           databaseHelper.insertImage(data.toURI().toString(),hashed, decrypted.getText().toString(), caption.getText().toString());
+                           idef = data.toURI().toString();
+                           databaseHelper.insertImage(data.toURI().toString(),hashed, decrypted.getText().toString(), caption.getText().toString(), stream.toByteArray());
+                           autoUpload(finalBm);
+                           Log.d("ARRRRRRRAAAYY", stream.toByteArray().toString());
                            Toast.makeText(getContext(), "PHOTO SAVED", Toast.LENGTH_SHORT).show();
                            getFragmentManager().beginTransaction().replace(R.id.content_frame,new MainActivity()).commit();
                        } catch (NoSuchAlgorithmException e) {
@@ -508,5 +552,68 @@ public class MainActivity extends Fragment implements LocationListener {
         byte[] b2 = new BigInteger(s, 36).toByteArray();
         return Arrays.copyOfRange(b2, 1, b2.length);
     }
+
+    public void autoUpload(Bitmap bim){
+
+        ConnectivityManager connectivity = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivity != null) {
+            NetworkInfo[] info = connectivity.getAllNetworkInfo();
+            if (info != null) {
+                for (int i = 0; i < info.length; i++) {
+                    if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+                        if (!isConnected) {
+                            Log.v("YAAAAAAS", "Now you are connected to Internet!");
+                            Toast.makeText(getContext(), "Internet available via Broadcast receiver", Toast.LENGTH_SHORT).show();
+                            isConnected = true;
+
+                            final ImageHelper imageHelper = databaseHelper.getImage(idef);
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            if(bim!=null){
+                                bim.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                            }
+
+                            byte[] imageBytes = baos.toByteArray();
+                            final String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+                            RequestQueue queue = Volley.newRequestQueue(getContext());
+                            String url = Constants.url + "unhash/";
+                            StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
+                                @Override
+                                public void onResponse(String s) {
+                                    databaseHelper.changeUpld(imageHelper.getImageId());
+                                    Toast.makeText(getContext(),"Uploaded", Toast.LENGTH_LONG).show();
+                                }
+                            },new Response.ErrorListener(){
+                                @Override
+                                public void onErrorResponse(VolleyError volleyError) {
+                                    Log.d("ERRRRRROR", String.valueOf(volleyError));
+                                    //Toast.makeText(getContext(), "Upload error -> "+volleyError, Toast.LENGTH_LONG).show();
+                                }
+                            }) {
+                                //adding parameters to send
+                                @Override
+                                protected Map<String, String> getParams() throws AuthFailureError {
+                                    Map<String, String> parameters = new HashMap<String, String>();
+                                    parameters.put("photo", imageString);
+                                    parameters.put("hashcode", imageHelper.getHashcode());
+                                    parameters.put("encrypted", imageHelper.getEncrypted());
+                                    parameters.put("caption", imageHelper.getCaption());
+                                    return parameters;
+                                }
+                            };
+
+                            queue.add(request);
+                            Toast.makeText(getContext(), "Upload started", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            }
+        }
+
+
+    }
+
+
+
+
 
 }

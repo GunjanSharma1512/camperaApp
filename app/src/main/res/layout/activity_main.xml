@@ -98,13 +98,6 @@
         android:textSize="20sp"
         android:text="LONGITUDE:    75.87"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textColor="@android:color/white"
-        android:textSize="20sp"
-        android:text="LATITUDE:    26.77"/>
 
     <TextView
         android:id="@+id/city"

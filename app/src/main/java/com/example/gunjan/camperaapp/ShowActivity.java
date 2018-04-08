@@ -1,9 +1,12 @@
 package com.example.gunjan.camperaapp;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -110,6 +113,7 @@ public class ShowActivity extends android.app.Fragment{
                         }*/
                         Toast.makeText(getContext(), "ID received: "+s, Toast.LENGTH_LONG).show();
                         databaseHelper.insertId(path,s);
+                        databaseHelper.changeUpld(path);
                         new CountDownTimer(30000,30000){
                             @Override
                             public void onTick(long l) {
@@ -188,6 +192,9 @@ public class ShowActivity extends android.app.Fragment{
 
             }
         });
+
+
+
 
         return myView;
     }
@@ -288,6 +295,40 @@ public class ShowActivity extends android.app.Fragment{
             queue.add(request);
         }
 
+
+
+    }
+
+    public void autoUpload(){
+        /*final ImageHelper imageHelper = databaseHelper.nextUpld();
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        String url = Constants.url + "unhash/";
+        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
+            @Override
+            public void onResponse(String s) {
+                databaseHelper.changeUpld(imageHelper.getImageId());
+            }
+        },new Response.ErrorListener(){
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(getContext(), "Some error occurred -> "+volleyError, Toast.LENGTH_LONG).show();;
+            }
+        }) {
+            //adding parameters to send
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> parameters = new HashMap<String, String>();
+                parameters.put("photo", Base64.encodeToString(imageHelper.getImage(), Base64.DEFAULT));
+                Log.d("AAAAAAAAAAAAAAAAAAphoto", Base64.encodeToString(imageHelper.getImage(), Base64.DEFAULT));
+                parameters.put("hashcode", imageHelper.getHashcode());
+                parameters.put("encrypted", imageHelper.getEncrypted());
+                parameters.put("caption", imageHelper.getCaption());
+                return parameters;
+            }
+        };
+        request.setTag("YAS");
+        if(imageHelper.getImage()==null) queue.cancelAll("YAS");
+        queue.add(request);*/
 
 
     }
